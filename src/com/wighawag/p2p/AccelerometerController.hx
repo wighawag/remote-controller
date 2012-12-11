@@ -9,12 +9,12 @@ class AccelerometerController {
 
     public static var DATA = "AccelerometerData";
 
-    private var p2pConnection : P2PGroupConnection<Dynamic>;
+    private var p2pConnection : P2PGroupConnection;
     private var accel : Accelerometer;
     public var onDataSent : Signal1<Dynamic>;
     private var timer : Timer;
 
-    public function new(p2pConnection : P2PGroupConnection<Dynamic>) {
+    public function new(p2pConnection : P2PGroupConnection) {
         onDataSent = new Signal1();
         this.p2pConnection = p2pConnection;
     }

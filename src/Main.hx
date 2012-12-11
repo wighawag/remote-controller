@@ -1,6 +1,6 @@
 package ;
 
-import com.wighawag.p2p.MessageWrapper;
+import com.wighawag.p2p.MessageWrap;
 import com.wighawag.p2p.ButtonPanelController;
 import com.wighawag.p2p.AccelerometerController;
 import com.wighawag.p2p.P2PGroupConnection;
@@ -86,7 +86,7 @@ class Main
 		main.checkRemoteDevice();
 	}
 	
-	private var p2pConnection : P2PGroupConnection<Dynamic>;
+	private var p2pConnection : P2PGroupConnection;
 	private var timer : Timer;
     private var accel : AccelerometerController;
 	private var accelText : TextField;
@@ -112,6 +112,17 @@ class Main
             accelText.text = "" + data.x +"\n"+ data.y+",\n" + data.z;
         });
         accel.start();
+
+        p2pConnection.onMessageReceived.add(function(wrap : MessageWrap, info : Dynamic):Void{
+            Report.anInfo("Main", wrap.messageType, wrap.message, wrap.timestamp);
+            if(info.fromLocal == true){
+                // We have reached final destination
+                //trace("Received Message: "+event.info.message.value);
+            }else{
+                // Forwarding
+                //	netGroup.sendToNearest(e.info.message, e.info.message.destination);
+            }
+        });
 
         buttonPanel = new ButtonPanelController(p2pConnection, Lib.current.stage);
         buttonPanel.start();

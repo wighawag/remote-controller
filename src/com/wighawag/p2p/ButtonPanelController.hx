@@ -9,10 +9,10 @@ class ButtonPanelController {
 
     public static var DATA : String = "ButtonData";
 
-    private var p2pConnection : P2PGroupConnection<Dynamic>;
+    private var p2pConnection : P2PGroupConnection;
     private var panel : DisplayObjectContainer;
 
-    public function new(p2pConnection : P2PGroupConnection<Dynamic>, panel : DisplayObjectContainer) {
+    public function new(p2pConnection : P2PGroupConnection, panel : DisplayObjectContainer) {
         this.p2pConnection = p2pConnection;
         this.panel = panel;
     }

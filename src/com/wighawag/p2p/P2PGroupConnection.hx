@@ -1,6 +1,6 @@
 package  com.wighawag.p2p;
 
-import com.wighawag.p2p.MessageWrapper;
+import com.wighawag.p2p.MessageWrap;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.events.NetStatusEvent;
@@ -9,19 +9,21 @@ import flash.net.NetConnection;
 import flash.net.NetGroup;
 import msignal.Signal;
 
-class P2PGroupConnection<MessageType> {
+class P2PGroupConnection {
 	
 	private var localNc:NetConnection;
 	private var group:NetGroup;	
 	private var connected:Bool = false;
 	private var groupPin:String;
+    public var onMessageReceived(default,null) : Signal2<MessageWrap, Dynamic>;
 	public var onConnect(default, null) : Signal0;	
 	public var onConnectionClosed(default, null) : Signal0;	
 
-	public function new(groupPin : String){ 
+	public function new(groupPin : String){
 		this.groupPin = groupPin;
 		onConnect = new Signal0();
 		onConnectionClosed = new Signal0();
+        onMessageReceived = new Signal2();
 	}
 	
 	public function connect():Void{
@@ -53,16 +55,8 @@ class P2PGroupConnection<MessageType> {
 				
 			
 			case "NetGroup.SendTo.Notify":
-                Report.anInfo("Controller", event.info.message.timestamp, event.info.message.x, event.info.message.y, event.info.message.z);
-				if(event.info.fromLocal == true){
-					// We have reached final destination
-					//trace("Received Message: "+event.info.message.value);
-				}else{
-					// Forwarding
-				//	netGroup.sendToNearest(e.info.message, e.info.message.destination);
-				}
-				
-		}
+				onMessageReceived.dispatch(MessageWrap.parse(event.info.message),event.info);
+        }
 	}
 	
 	private function setupGroup():Void{
@@ -79,10 +73,10 @@ class P2PGroupConnection<MessageType> {
 
 	}
 	
-	public function sendData(data:MessageType, messageType : String):Void{
+	public function sendData(data:Dynamic, messageType : String):Void{
 		if(connected){
-            var wrapper = new MessageWrapper(data, messageType, haxe.Timer.stamp() / 1000);
-			group.sendToAllNeighbors(wrapper);
+            var wrap = new MessageWrap(data, messageType, haxe.Timer.stamp() / 1000);
+			group.sendToAllNeighbors(wrap);
 		}          
 	}
 	
