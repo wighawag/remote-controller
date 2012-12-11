@@ -1,9 +1,12 @@
 package ;
 
+import com.wighawag.p2p.MessageWrapper;
+import com.wighawag.p2p.ButtonPanelController;
+import com.wighawag.p2p.AccelerometerController;
+import com.wighawag.p2p.P2PGroupConnection;
 import flash.display.StageScaleMode;
 import flash.display.StageAlign;
 import flash.display.Sprite;
-import com.wighawag.p2p.RemoteDeviceController;
 import flash.events.AccelerometerEvent;
 import flash.Lib;
 import flash.sensors.Accelerometer;
@@ -24,39 +27,11 @@ import flash.events.KeyboardEvent;
 import flash.ui.Keyboard;
 #end
 
+import flash.ui.Multitouch;
+import flash.ui.MultitouchInputMode;
+
 class Main 
 {
-	private static function handleTrace(severity: Dynamic, ?posInfos : haxe.PosInfos ) {
-        var channel = "";
-        var extraParams = "";
-        if (posInfos.customParams != null && posInfos.customParams.length > 0){
-            channel = " {" + posInfos.customParams[0] + "}";
-
-            for (i in 1...posInfos.customParams.length){
-                var extraComma = ", ";
-                if (i==1){
-                    extraComma = " : ";
-                }
-                extraParams += extraComma + posInfos.customParams[i];
-            }
-
-        }
-
-        var message : String = severity  + channel + extraParams;
-
-        #if flash
-			#if desktop
-			log.appendText(message + "\n");
-			#else
-			log.appendText(message + "\n");//flash.Lib.trace(message);
-			#end
-		#elseif cpp
-		    cpp.Lib.println(message);
-		#else
-            //trace(value, posInfos);
-        #end
-    }
-	
 	#if desktop
 	static function main()  : Void {
 		var app = NativeApplication.nativeApplication;
@@ -94,11 +69,12 @@ class Main
 	private static var log : TextField;
 	
 	static function ready() : Void {
+        Multitouch.inputMode=MultitouchInputMode.TOUCH_POINT;
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-        //Lib.current.stage.allowsFullScreen = true;
-        haxe.Log.trace = handleTrace;
+
 		log = new TextField();
+        haxe.Log.trace = new Logger(log).handleTrace;
 		log.y = 70;
 		log.mouseEnabled = false;
 		log.multiline = true;
@@ -110,10 +86,11 @@ class Main
 		main.checkRemoteDevice();
 	}
 	
-	private var remoteDeviceController : RemoteDeviceController;
-	private var accel : Accelerometer;
+	private var p2pConnection : P2PGroupConnection<Dynamic>;
 	private var timer : Timer;
+    private var accel : AccelerometerController;
 	private var accelText : TextField;
+    private var buttonPanel : ButtonPanelController;
 	
 	public function new() {
 		accelText = new TextField();
@@ -130,28 +107,23 @@ class Main
             timer.stop();
         }
 		timer = null;
-		if (Accelerometer.isSupported) {
-			accel = new Accelerometer();
-			accel.setRequestedUpdateInterval(20);
-			accel.addEventListener(AccelerometerEvent.UPDATE, accelUpdate);
-		}else {
-			// debug purpose
-			timer = new Timer(1000);
-			timer.run = function():Void { remoteDeviceController.sendData( { x:1, y:1, z:1 } ); };
-		}
-		
+		accel = new AccelerometerController(p2pConnection);
+        accel.onDataSent.add(function(data : Dynamic):Void{
+            accelText.text = "" + data.x +"\n"+ data.y+",\n" + data.z;
+        });
+        accel.start();
+
+        buttonPanel = new ButtonPanelController(p2pConnection, Lib.current.stage);
+        buttonPanel.start();
 	}
-	
-	function accelUpdate(event:AccelerometerEvent):Void {
-			accelText.text = "" + event.accelerationX +"\n"+ event.accelerationY+",\n" + event.accelerationZ;
-			remoteDeviceController.sendData( { x:-event.accelerationY, y:event.accelerationX, z:event.accelerationZ } );
-	}
-	
+
 	private function deviceDisconnected() : Void {
 		if (accel != null) {
-			accel.removeEventListener(AccelerometerEvent.UPDATE, accelUpdate);
-			accel = null;
+			accel.stop();
 		}
+        if (buttonPanel != null) {
+            buttonPanel.stop();
+        }
 		if (timer != null) {
 			timer.stop();
 		}
@@ -160,10 +132,10 @@ class Main
 	}
 	
 	private function checkRemoteDevice() : Void {
-		remoteDeviceController = new RemoteDeviceController("dddd");
-		remoteDeviceController.onConnect.add(deviceConnected);
-		remoteDeviceController.onConnectionClosed.add(deviceDisconnected);
-        remoteDeviceController.connect();
+		p2pConnection = new P2PGroupConnection("dddd");
+		p2pConnection.onConnect.add(deviceConnected);
+		p2pConnection.onConnectionClosed.add(deviceDisconnected);
+        p2pConnection.connect();
 	}
 
 	

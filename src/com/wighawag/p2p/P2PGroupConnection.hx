@@ -1,6 +1,6 @@
 package  com.wighawag.p2p;
 
-import flash.events.AccelerometerEvent;
+import com.wighawag.p2p.MessageWrapper;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.events.NetStatusEvent;
@@ -9,7 +9,7 @@ import flash.net.NetConnection;
 import flash.net.NetGroup;
 import msignal.Signal;
 
-class RemoteDeviceController {
+class P2PGroupConnection<MessageType> {
 	
 	private var localNc:NetConnection;
 	private var group:NetGroup;	
@@ -79,10 +79,10 @@ class RemoteDeviceController {
 
 	}
 	
-	public function sendData(data:Dynamic):Void{
+	public function sendData(data:MessageType, messageType : String):Void{
 		if(connected){
-            data.timestamp = haxe.Timer.stamp();
-			group.sendToAllNeighbors(data);
+            var wrapper = new MessageWrapper(data, messageType, haxe.Timer.stamp() / 1000);
+			group.sendToAllNeighbors(wrapper);
 		}          
 	}
 	
