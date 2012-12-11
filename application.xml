@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<application xmlns="http://ns.adobe.com/air/application/3.5">
+	
+	<id>AccelerometerController</id> 
+	<versionNumber>1.0</versionNumber> 
+	<filename>AccelerometerController</filename> 
+	
+	<name>AccelerometerController</name> 
+	<description></description> 
+	<copyright></copyright> 
+	
+	<initialWindow> 
+		<title>AccelerometerController</title> 
+		<content>AccelerometerController.swf</content> 
+		<systemChrome>standard</systemChrome> 
+		<transparent>false</transparent> 
+		<visible>true</visible> 
+		
+		<autoOrients>false</autoOrients>
+		<fullScreen>true</fullScreen>
+		<aspectRatio>landscape</aspectRatio>
+	</initialWindow> 
+	
+	<!-- 
+	More options:
+	http://livedocs.adobe.com/flex/3/html/File_formats_1.html#1043413
+	-->
+	<android>
+		<manifestAdditions>
+			<![CDATA[
+			<manifest android:installLocation="auto"> <uses-permission android:name="android.permission.INTERNET"/> <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>--> <!--<uses-permission android:name="android.permission.READ_PHONE_STATE"/>--> <!--<uses-permission android:name="android.permission.VIBRATE"/>--> <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>--> <!--<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>--> <!--<uses-permission android:name="android.permission.WAKE_LOCK"/>--> <!--<uses-permission android:name="android.permission.CAMERA"/>--> <!--<uses-permission android:name="android.permission.RECORD_AUDIO"/>--> <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>--> <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>--> <!--<uses-feature android:required="true" android:name="android.hardware.touchscreen.multitouch"/>--> <!--<application android:enabled="true"> <activity android:excludeFromRecents="false"> <intent-filter> <action android:name="android.intent.action.MAIN"/> <category android:name="android.intent.category.LAUNCHER"/> </intent-filter> </activity> </application>--> </manifest>
+			]]>
+		</manifestAdditions>
+			<!--
+			 Color depth for the app (either "32bit" or "16bit"). Optional. Default 16bit before namespace 3.0, 32bit after 
+			-->
+			<!-- <colorDepth></colorDepth> -->
+	</android>
+	
+</application>

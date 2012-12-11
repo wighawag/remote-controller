@@ -1,0 +1,13 @@
+*.iml
+.idea
+bin
+out
+air
+AIR_Android_readme.txt
+AIR_iOS_readme.txt
+AccelerometerController.hxproj
+PackageApp.bat
+Run.bat
+bat/
+packAndroid.bat
+
