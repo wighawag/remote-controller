@@ -27,15 +27,22 @@ class Logger {
         var message : String = severity  + channel + extraParams;
 
         #if flash
-			#if desktop
-			log.appendText(message + "\n");
+			#if air
+            appendToLogTextField(log, message);
 			#else
-			log.appendText(message + "\n");//flash.Lib.trace(message);
+			appendToLogTextField(log, message);//flash.Lib.trace(message);
 			#end
 		#elseif cpp
 		    cpp.Lib.println(message);
 		#else
             //trace(value, posInfos);
         #end
+    }
+
+    inline private static function appendToLogTextField(log : TextField, message) : Void{
+        log.appendText(message + "\n");
+        if(log.numLines > log.bottomScrollV) {
+            log.scrollV = log.maxScrollV;
+        }
     }
 }

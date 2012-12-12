@@ -42,22 +42,22 @@ class AccelerometerController {
     }
 
 
-    #if desktop
-    private function fakeAccelerometer() : Void{
-        // TODO add some key ?
-        sendData( { x:1, y:1, z:1 } );
-    }
-    #else
     private function fakeAccelerometer() : Void{
         var stage = Lib.current.stage;
         var computedX = (stage.mouseX - stage.stageWidth /2) /(stage.stageWidth/2);
         var computedY = - (stage.mouseY - stage.stageHeight /2) /(stage.stageHeight/2);
         sendData( {x : computedY, y : - computedX, z : 0 });
     }
-    #end
+
 
     public function stop() : Void{
-        accel.removeEventListener(AccelerometerEvent.UPDATE, accelUpdate);
-        accel = null;
+        if (accel != null){
+            accel.removeEventListener(AccelerometerEvent.UPDATE, accelUpdate);
+            accel = null;
+        }
+        if (timer!= null){
+            timer.stop();
+            timer = null;
+        }
     }
 }

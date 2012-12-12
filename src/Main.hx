@@ -1,5 +1,6 @@
 package ;
 
+import com.wighawag.p2p.Lobby;
 import com.wighawag.p2p.MessageWrap;
 import com.wighawag.p2p.ButtonPanelController;
 import com.wighawag.p2p.AccelerometerController;
@@ -18,7 +19,7 @@ import haxe.Timer;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
-#if desktop
+#if air
 import flash.filesystem.File;
 import flash.desktop.NativeApplication;
 import flash.desktop.SystemIdleMode;
@@ -32,7 +33,7 @@ import flash.ui.MultitouchInputMode;
 
 class Main 
 {
-	#if desktop
+	#if air
 	static function main()  : Void {
 		var app = NativeApplication.nativeApplication;
 		app.addEventListener(InvokeEvent.INVOKE, onInvoked);
@@ -78,12 +79,13 @@ class Main
 		log.y = 70;
 		log.mouseEnabled = false;
 		log.multiline = true;
-		log.autoSize = TextFieldAutoSize.LEFT;
+		//log.autoSize = TextFieldAutoSize.LEFT;
+        log.height = Lib.current.stage.stageHeight - 70;
+        log.width = Lib.current.stage.stageWidth;
 		log.selectable = false;
 		log.type = TextFieldType.DYNAMIC;
 		Lib.current.addChild(log);
 		var main = new Main();
-		main.checkRemoteDevice();
 	}
 	
 	private var p2pConnection : P2PGroupConnection;
@@ -100,18 +102,23 @@ class Main
 		accelText.selectable = false;
 		accelText.type = TextFieldType.DYNAMIC;
 		Lib.current.addChild(accelText);
+        if(Lib.current.stage == null){
+            Lib.current.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        }else{
+            onAddedToStage();
+        }
+
 	}
+
+    private function onAddedToStage(?event : Event = null) : Void{
+        checkRemoteDevice();
+    }
 	
 	private function deviceConnected() : Void {
         if (timer != null){
             timer.stop();
         }
 		timer = null;
-		accel = new AccelerometerController(p2pConnection);
-        accel.onDataSent.add(function(data : Dynamic):Void{
-            accelText.text = "" + data.x +"\n"+ data.y+",\n" + data.z;
-        });
-        accel.start();
 
         p2pConnection.onMessageReceived.add(function(wrap : MessageWrap, info : Dynamic):Void{
             Report.anInfo("Main", wrap.messageType, wrap.message, wrap.timestamp);
@@ -124,9 +131,21 @@ class Main
             }
         });
 
+
+        var lobby = new Lobby(p2pConnection);
+        lobby.waitForRequest().then(onPrivateChannelEstablished);
+	}
+
+    private function onPrivateChannelEstablished(p2pConnection : P2PGroupConnection) : Void{
+        accel = new AccelerometerController(p2pConnection);
+        accel.onDataSent.add(function(data : Dynamic):Void{
+            accelText.text = "" + data.x +"\n"+ data.y+",\n" + data.z;
+        });
+        accel.start();
+
         buttonPanel = new ButtonPanelController(p2pConnection, Lib.current.stage);
         buttonPanel.start();
-	}
+    }
 
 	private function deviceDisconnected() : Void {
 		if (accel != null) {
@@ -144,10 +163,9 @@ class Main
 	
 	private function checkRemoteDevice() : Void {
 		p2pConnection = new P2PGroupConnection("dddd");
-		p2pConnection.onConnect.add(deviceConnected);
-		p2pConnection.onConnectionClosed.add(deviceDisconnected);
+		p2pConnection.onConnect.addOnce(deviceConnected);
+		//p2pConnection.onConnectionClosed.addOnce(deviceDisconnected);
         p2pConnection.connect();
 	}
 
-	
 }
