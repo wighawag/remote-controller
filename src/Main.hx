@@ -1,10 +1,10 @@
 package ;
 
-import com.wighawag.p2p.Lobby;
-import com.wighawag.p2p.MessageWrap;
-import com.wighawag.p2p.ButtonPanelController;
-import com.wighawag.p2p.AccelerometerController;
 import com.wighawag.p2p.P2PGroupConnection;
+import com.wighawag.p2p.MessageWrap;
+import com.wighawag.p2p.Lobby;
+import com.wighawag.controller.ButtonPanelController;
+import com.wighawag.controller.AccelerometerController;
 import flash.display.StageScaleMode;
 import flash.display.StageAlign;
 import flash.display.Sprite;

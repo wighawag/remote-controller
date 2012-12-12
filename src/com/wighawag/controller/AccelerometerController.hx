@@ -1,10 +1,11 @@
-package com.wighawag.p2p;
+package com.wighawag.controller;
 import flash.Lib;
 import flash.events.KeyboardEvent;
 import flash.events.AccelerometerEvent;
 import haxe.Timer;
 import flash.sensors.Accelerometer;
 import msignal.Signal;
+import com.wighawag.p2p.P2PGroupConnection;
 class AccelerometerController {
 
     public static var DATA = "AccelerometerData";

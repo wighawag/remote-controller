@@ -1,4 +1,4 @@
-package com.wighawag.p2p;
+package com.wighawag.controller;
 import flash.display.Stage;
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -6,6 +6,7 @@ import flash.events.TouchEvent;
 import flash.ui.Multitouch;
 import flash.display.Sprite;
 import flash.display.DisplayObjectContainer;
+import com.wighawag.p2p.P2PGroupConnection;
 class ButtonPanelController {
 
     public static var DATA : String = "ButtonData";
