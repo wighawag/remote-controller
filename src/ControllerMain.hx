@@ -31,7 +31,7 @@ import flash.ui.Keyboard;
 import flash.ui.Multitouch;
 import flash.ui.MultitouchInputMode;
 
-class Main 
+class ControllerMain 
 {
 	#if air
 	static function main()  : Void {
@@ -85,7 +85,7 @@ class Main
 		log.selectable = false;
 		log.type = TextFieldType.DYNAMIC;
 		Lib.current.addChild(log);
-		var main = new Main();
+		var main = new ControllerMain();
 	}
 	
 	private var p2pConnection : P2PGroupConnection;
@@ -112,6 +112,7 @@ class Main
 
     private function onAddedToStage(?event : Event = null) : Void{
         connectToLobbyGroup();
+	    Report.anInfo("Main", "added to stage");
     }
 	
 	private function deviceConnected() : Void {

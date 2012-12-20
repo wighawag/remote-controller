@@ -1,4 +1,5 @@
 package com.wighawag.controller;
+import com.wighawag.controller.ButtonPanelController;
 import flash.display.Stage;
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -11,9 +12,18 @@ class ButtonPanelController {
 
     public static var DATA : String = "ButtonData";
 
+	public static var BUTTON_RELEASE : Int = 0;
+	public static var BUTTON_PRESS : Int = 1;
+
+	public static var BUTTON_1 : Int = 1;
+	public static var BUTTON_2 : Int = 2;
+
     private var p2pConnection : P2PGroupConnection;
 	private var container : DisplayObjectContainer;
     private var panel : Sprite;
+
+	private var button1 : Sprite;
+	private var button2 : Sprite;
 
     public function new(p2pConnection : P2PGroupConnection, container : DisplayObjectContainer) {
         this.p2pConnection = p2pConnection;
@@ -36,37 +46,48 @@ class ButtonPanelController {
 
         var midY = panelHeight /2 ;
         var buttonRadius = 30;
-        var button1 = new Sprite();
-        button1.graphics.beginFill(0x48DA48);
-        button1.graphics.drawCircle(buttonRadius, midY, buttonRadius);
-        button1.graphics.endFill();
-        function onButton1(event : Event) : Void{
-            p2pConnection.sendData(32, DATA); //TODO SPACE ()use polygonal ui lib for these constants
-        }
-        if(Multitouch.supportsTouchEvents){
-            button1.addEventListener(TouchEvent.TOUCH_END,onButton1);
-        }else{
-            button1.addEventListener(MouseEvent.CLICK,onButton1);
-        }
 
-        panel.addChild(button1);
+	    createButton(BUTTON_1,buttonRadius, midY, buttonRadius,0x48DA48);
+	    createButton(BUTTON_2,panelWidth - buttonRadius, midY, buttonRadius, 0xFA5E5E);
 
-        var button2 = new Sprite();
-        button2.graphics.beginFill(0xFA5E5E);
-        button2.graphics.drawCircle(panelWidth - buttonRadius, midY, buttonRadius);
-        button2.graphics.endFill();
-        function onButton2(event : Event) : Void{
-            p2pConnection.sendData(32, DATA); //TODO SPACE ()use polygonal ui lib for these constants
-        }
-        if(Multitouch.supportsTouchEvents){
-            button2.addEventListener(TouchEvent.TOUCH_END,onButton2);
-        }else{
-            button2.addEventListener(MouseEvent.CLICK,onButton2);
-        }
-        panel.addChild(button2);
     }
+
+	private function createButton(id : Int, x : Float, y : Float, radius : Float, color : Int) : Void{
+		var button = new Button(id);
+		button.graphics.beginFill(color);
+		button.graphics.drawCircle(x, y, radius);
+		button.graphics.endFill();
+		if(Multitouch.supportsTouchEvents){
+			button.addEventListener(TouchEvent.TOUCH_BEGIN,onButtonPressed);
+			button.addEventListener(TouchEvent.TOUCH_END,onButtonReleased);
+		}else{
+			button.addEventListener(MouseEvent.MOUSE_DOWN,onButtonPressed);
+			button.addEventListener(MouseEvent.MOUSE_UP,onButtonReleased);
+		}
+		panel.addChild(button);
+	}
+
+	private function onButtonPressed(event : Event) : Void{
+		var button : Button = cast(event.target);
+		p2pConnection.sendData({button:button.id, state:BUTTON_PRESS}, DATA);
+	}
+
+	private function onButtonReleased(event : Event) : Void{
+		var button : Button = cast(event.target);
+		p2pConnection.sendData({button:button.id, state:BUTTON_RELEASE}, DATA);
+	}
 
     public function stop() : Void{
        container.removeChild(panel);
     }
+}
+
+class Button extends Sprite{
+
+	public var id : Int;
+
+	public function new(id : Int) {
+		super();
+		this.id = id;
+	}
 }

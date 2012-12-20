@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <application xmlns="http://ns.adobe.com/air/application/3.5">
 	
-	<id>AccelerometerController</id> 
+	<id>RemoteController</id>
 	<versionNumber>1.0</versionNumber> 
-	<filename>AccelerometerController</filename> 
+	<filename>RemoteController</filename>
 	
-	<name>AccelerometerController</name> 
+	<name>RemoteController</name>
 	<description></description> 
 	<copyright></copyright> 
 	
 	<initialWindow> 
-		<title>AccelerometerController</title> 
-		<content>AccelerometerController.swf</content> 
+		<title>RemoteController</title>
+		<content>RemoteController.swf</content>
 		<systemChrome>standard</systemChrome> 
 		<transparent>false</transparent> 
 		<visible>true</visible> 
