@@ -111,14 +111,10 @@ class Main
 	}
 
     private function onAddedToStage(?event : Event = null) : Void{
-        checkRemoteDevice();
+        connectToLobbyGroup();
     }
 	
 	private function deviceConnected() : Void {
-        if (timer != null){
-            timer.stop();
-        }
-		timer = null;
 
         p2pConnection.onMessageReceived.add(function(wrap : MessageWrap, info : Dynamic):Void{
             Report.anInfo("Main", wrap.messageType, wrap.message, wrap.timestamp);
@@ -143,6 +139,8 @@ class Main
         });
         accel.start();
 
+	    p2pConnection.onConnectionClosed.addOnce(deviceDisconnected);
+
         buttonPanel = new ButtonPanelController(p2pConnection, Lib.current.stage);
         buttonPanel.start();
     }
@@ -154,17 +152,13 @@ class Main
         if (buttonPanel != null) {
             buttonPanel.stop();
         }
-		if (timer != null) {
-			timer.stop();
-		}
-		timer = new Timer(5000);
-		timer.run = checkRemoteDevice;
+
+		connectToLobbyGroup();
 	}
 	
-	private function checkRemoteDevice() : Void {
+	private function connectToLobbyGroup() : Void {
 		p2pConnection = new P2PGroupConnection("dddd");
 		p2pConnection.onConnect.addOnce(deviceConnected);
-		//p2pConnection.onConnectionClosed.addOnce(deviceDisconnected);
         p2pConnection.connect();
 	}
 

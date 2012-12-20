@@ -12,18 +12,21 @@ class ButtonPanelController {
     public static var DATA : String = "ButtonData";
 
     private var p2pConnection : P2PGroupConnection;
-    private var panel : DisplayObjectContainer;
+	private var container : DisplayObjectContainer;
+    private var panel : Sprite;
 
-    public function new(p2pConnection : P2PGroupConnection, panel : DisplayObjectContainer) {
+    public function new(p2pConnection : P2PGroupConnection, container : DisplayObjectContainer) {
         this.p2pConnection = p2pConnection;
-        this.panel = panel;
+	    this.container = container;
+        this.panel = new Sprite();
+	    this.container.addChild(panel);
     }
 
     public function start() : Void{
         var panelWidth : Float;
         var panelHeight : Float;
-        if (Std.is(panel, Stage)){
-            var stage = cast(panel, Stage);
+        if (Std.is(container, Stage)){
+            var stage = cast(container, Stage);
             panelWidth  = stage.stageWidth;
             panelHeight = stage.stageHeight;
         }else{
@@ -64,8 +67,6 @@ class ButtonPanelController {
     }
 
     public function stop() : Void{
-        while(panel.numChildren > 0){
-            panel.removeChildAt(0);
-        }
+       container.removeChild(panel);
     }
 }

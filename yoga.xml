@@ -25,7 +25,7 @@
 
     <dependencies>
         <repository id="com.wighawag.report.Report" version="0.1.0"/>
-	    <repository id="com.wighawag.p2p" version="0.1.0"/>
+	    <repository id="com.wighawag.p2p" version="0.1.1-SNAPSHOT"/>
         <haxelib name="nme" version="3.4.0"/>
         <haxelib name="msignal" version="1.0.0"/>
         <haxelib name="air3" version="0.0.1" />
